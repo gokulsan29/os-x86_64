@@ -7,7 +7,7 @@ SRC_FILES := $(wildcard $(SRC_DIR)/*)
 C_FILES := $(filter %.c, $(SRC_FILES))
 NASM_FILES := $(filter %.asm, $(SRC_FILES))
 OBJ_FILES := $(patsubst $(SRC_DIR)/%, $(BUILD_DIR)/%.o, $(SRC_FILES))
-HEADER_DEPS := $(patsubst $(SRC_DIR)/%, $(BUILD_DIR)/%.d, $(SRC_FILES)) 
+HEADER_DEPS := $(patsubst $(SRC_DIR)/%, $(BUILD_DIR)/%.d, $(SRC_FILES))
 
 # Limine Variables
 LIMINE_DIR := limine
@@ -64,7 +64,7 @@ LDFLAGS := \
   --gc-sections
 LD_SCRIPT := limine_link.ld
 
-.PHONY: all all-hdd run run-uefi run-hdd run-hdd-uefi clean 
+.PHONY: all all-hdd run run-uefi run-hdd run-hdd-uefi clean
 
 all: $(OUTPUT_ISO)
 
