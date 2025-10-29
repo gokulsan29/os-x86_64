@@ -118,7 +118,7 @@ $(OUTPUT_HDD): $(LIMINE) $(LIMINE_CONF) $(OUTPUT_BIN)
 	mcopy -i $(OUTPUT_HDD)@@1M $(LIMINE_DIR)/BOOTX64.EFI ::/EFI/BOOT
 	mcopy -i $(OUTPUT_HDD)@@1M $(LIMINE_DIR)/BOOTIA32.EFI ::/EFI/BOOT
 
-QEMUFLAGS := -m 2G
+QEMUFLAGS := -m 2G -serial stdio
 
 run: $(OUTPUT_ISO)
 	qemu-system-x86_64 \
