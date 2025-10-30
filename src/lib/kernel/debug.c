@@ -1,8 +1,8 @@
 #include <stdbool.h>
 
-#include "common.h"
-#include "debug.h"
-#include "serial_port.h"
+#include "kernel/common.h"
+#include "kernel/debug.h"
+#include "kernel/serial_port.h"
 
 static serial_port_t debug_port;
 

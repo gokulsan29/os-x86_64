@@ -2,9 +2,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "debug.h"
+#include "kernel/debug.h"
 #include "limine.h"
-#include "limine_request.h"
+#include "limine/limine_request.h"
 
 // Halt and catch fire function.
 static void hcf(void) {

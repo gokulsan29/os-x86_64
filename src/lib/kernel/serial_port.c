@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "serial_port.h"
+#include "kernel/serial_port.h"
 
 static inline uint8_t
 inb(uint16_t port)

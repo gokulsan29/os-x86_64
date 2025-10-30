@@ -1,17 +1,19 @@
 SRC_DIR := src
-INCLUDE_DIRS := include limine
+LIB_DIR := $(SRC_DIR)/lib
+INCLUDE_DIRS := $(SRC_DIR)/include limine
 BUILD_DIR := build
 ISO_DIR := $(BUILD_DIR)/isodir
 
-SRC_FILES := $(wildcard $(SRC_DIR)/*)
-C_FILES := $(filter %.c, $(SRC_FILES))
-NASM_FILES := $(filter %.asm, $(SRC_FILES))
-OBJ_FILES := $(patsubst $(SRC_DIR)/%, $(BUILD_DIR)/%.o, $(SRC_FILES))
-HEADER_DEPS := $(patsubst $(SRC_DIR)/%, $(BUILD_DIR)/%.d, $(SRC_FILES))
+LIB_FILES := $(shell find -L $(LIB_DIR) -type f)
+C_FILES := $(filter %.c, $(LIB_FILES))
+NASM_FILES := $(filter %.asm, $(LIB_FILES))
+OBJ_FILES := $(patsubst $(LIB_DIR)/%, $(BUILD_DIR)/%.o, $(LIB_FILES))
+HEADER_DEPS := $(patsubst $(LIB_DIR)/%, $(BUILD_DIR)/%.d, $(LIB_FILES))
 
 # Limine Variables
 LIMINE_DIR := limine
 LIMINE := $(LIMINE_DIR)/limine
+LIMINE_HEADER := $(LIMINE_DIR)/limine.h
 LIMINE_CONF := limine.conf
 
 # OVMF Variables
@@ -73,11 +75,11 @@ all-hdd: $(OUTPUT_HDD)
 # Include header dependencies.
 -include $(HEADER_DEPS)
 
-$(BUILD_DIR)/%.c.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/%.c.o: $(LIB_DIR)/%.c
 	mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.asm.o: $(SRC_DIR)/%.asm
+$(BUILD_DIR)/%.asm.o: $(LIB_DIR)/%.asm
 	mkdir -p "$(dir $@)"
 	nasm $(NASMFLAGS) $< -o $@
 
