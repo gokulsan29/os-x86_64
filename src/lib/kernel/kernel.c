@@ -20,9 +20,6 @@ void kernel_main(void) {
     hcf();
   }
 
-  debug_printstring("Hello, World\n");
-  debug_printstring("Printing using debug_printf\n");
-
   if (!check_limine_requests()) {
     hcf();
   }
