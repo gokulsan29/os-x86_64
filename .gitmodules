@@ -1,3 +1,4 @@
 [submodule "limine"]
 	path = limine
-	url = ./limine
+	url = https://codeberg.org/Limine/Limine.git
+	shallow = true
