@@ -6,5 +6,5 @@
 
 bool debug_init();
 void debug_putchar(char c);
-void debug_printstring(char const* str);
+void debug_printf(char const* fmt, ...);
 
