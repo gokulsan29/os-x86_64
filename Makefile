@@ -96,29 +96,20 @@ $(OUTPUT_ISO): $(LIMINE) $(LIMINE_CONF) $(OUTPUT_BIN)
 	mkdir -p $(ISO_DIR)/boot/limine
 	cp -v $(LIMINE_CONF) $(LIMINE_DIR)/limine-bios.sys \
 				$(LIMINE_DIR)/limine-bios-cd.bin \
-				$(LIMINE_DIR)/limine-uefi-cd.bin \
 				$(ISO_DIR)/boot/limine/
-	mkdir -p $(ISO_DIR)/EFI/BOOT
-	cp -v $(LIMINE_DIR)/BOOTX64.EFI $(ISO_DIR)/EFI/BOOT/
-	cp -v $(LIMINE_DIR)/BOOTIA32.EFI $(ISO_DIR)/EFI/BOOT/
 	xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
-		-no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus \
-		-apm-block-size 2048 --efi-boot boot/limine/limine-uefi-cd.bin \
-		-efi-boot-part --efi-boot-image --protective-msdos-label \
+		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		$(ISO_DIR) -o $(OUTPUT_ISO)
 	./$(LIMINE) bios-install $(OUTPUT_ISO)
 
 $(OUTPUT_HDD): $(LIMINE) $(LIMINE_CONF) $(OUTPUT_BIN)
 	rm -f $(OUTPUT_HDD)
 	dd if=/dev/zero bs=1M count=0 seek=64 of=$(OUTPUT_HDD)
-	PATH=$$PATH:/usr/sbin:/sbin sgdisk $(OUTPUT_HDD) -n 1:2048 -t 1:ef00 -m 1
 	./$(LIMINE) bios-install $(OUTPUT_HDD)
 	mformat -i $(OUTPUT_HDD)@@1M
-	mmd -i $(OUTPUT_HDD)@@1M ::/EFI ::/EFI/BOOT ::/boot ::/boot/limine
+	mmd -i $(OUTPUT_HDD)@@1M ::/boot ::/boot/limine
 	mcopy -i $(OUTPUT_HDD)@@1M $(OUTPUT_BIN) ::/boot
 	mcopy -i $(OUTPUT_HDD)@@1M $(LIMINE_CONF) $(LIMINE_DIR)/limine-bios.sys ::/boot/limine
-	mcopy -i $(OUTPUT_HDD)@@1M $(LIMINE_DIR)/BOOTX64.EFI ::/EFI/BOOT
-	mcopy -i $(OUTPUT_HDD)@@1M $(LIMINE_DIR)/BOOTIA32.EFI ::/EFI/BOOT
 
 QEMUFLAGS := -m 2G -serial stdio
 
@@ -129,24 +120,9 @@ run: $(OUTPUT_ISO)
 		-boot d \
 		$(QEMUFLAGS)
 
-run-uefi: $(OVMF) $(OUTPUT_ISO)
-	qemu-system-x86_64 \
-		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=$(OVMF),readonly=on \
-		-cdrom $(OUTPUT_ISO) \
-		-boot d \
-		$(QEMUFLAGS)
-
 run-hdd: $(OUTPUT_HDD)
 	qemu-system-x86_64 \
 		-M q35 \
-		-hda $(OUTPUT_HDD) \
-		$(QEMUFLAGS)
-
-run-hdd-uefi: $(OVMF) $(OUTPUT_HDD)
-	qemu-system-x86_64 \
-		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=$(OVMF),readonly=on \
 		-hda $(OUTPUT_HDD) \
 		$(QEMUFLAGS)
 
