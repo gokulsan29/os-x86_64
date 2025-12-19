@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "kernel/serial_port.h"
@@ -48,12 +49,19 @@ serial_port_init(uint16_t port)
   // If serial is not faulty set it in normal operation mode
   // (not-loopback with IRQs enabled and OUT#1 and OUT#2 bits enabled)
   outb(port + 4, 0x0F);
+
   return (serial_port_t){.addr = port};
+}
+
+bool is_transmit_empty(serial_port_t port)
+{
+  return ((inb(port.addr + 5) & 0x20) != 0);
 }
 
 void
 serial_putchar(serial_port_t port, char c)
 {
+  while (!is_transmit_empty(port)); // Wait till transmit buffer is empty
   outb(port.addr, c);
 }
 

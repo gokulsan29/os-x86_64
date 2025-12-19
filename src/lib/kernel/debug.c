@@ -77,6 +77,16 @@ debug_printf(char const* fmt, ...)
     }
     else {
       fmt++;
+      bool is_long = false;
+      bool is_long_long = false;
+      if (*fmt == 'l') {
+        fmt++;
+        is_long = true;
+        if (*fmt == 'l') {
+          fmt++;
+          is_long_long = true;
+        }
+      }
       switch (*fmt) {
         case '\0': {
           debug_putchar('%');
@@ -99,13 +109,34 @@ debug_printf(char const* fmt, ...)
           break;
         }
         case 'd': {
-          int64_t value = VA_ARG(args, int);
+          int64_t value;
+          if (is_long_long) {
+            value = VA_ARG(args, long long int);
+          }
+          else if (is_long) {
+            value = VA_ARG(args, long int);
+          }
+          else {
+            value = VA_ARG(args, int);
+          }
           _print_int(value);
           break;
         }
         case 'x': {
-          uint64_t value = VA_ARG(args, unsigned int);
-          size_t size = sizeof(unsigned int);
+          uint64_t value;
+          size_t size;
+          if (is_long_long) {
+            value = VA_ARG(args, unsigned long long int);
+            size = sizeof(unsigned long long int);
+          }
+          else if (is_long) {
+            value = VA_ARG(args, unsigned long int);
+            size = sizeof(unsigned long int);
+          }
+          else {
+            value = VA_ARG(args, unsigned int);
+            size = sizeof(unsigned int);
+          }
           _print_hex(value, size);
           break;
         }
@@ -125,3 +156,4 @@ debug_printf(char const* fmt, ...)
   }
   VA_END(args);
 }
+
